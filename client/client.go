@@ -14,6 +14,8 @@ func main() {
 
 	fmt.Println("Type ':' to open the command prompt.")
 
+	// Start a goroutine to save periodically
+	go savePeriodically()
 
 	// Infinite loop to continuously read user input
 	for {
@@ -44,5 +46,14 @@ func processCommand(command string) {
 		os.Exit(0)
 	default:
 		fmt.Println("Unknown command:", command)
+	}
+}
+
+// Save something periodically
+func savePeriodically() {
+	for {
+		time.Sleep(10 * time.Second) // Sleep for 10 seconds
+		fmt.Println("Automatically saving...")
+		// Implement save logic here
 	}
 }
