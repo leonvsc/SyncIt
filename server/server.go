@@ -4,35 +4,51 @@ import (
 	"bufio"
 	"fmt"
 	"net"
-	"strings"
 )
+
+const HeaderByte = 5
 
 func handleConnection(conn net.Conn) {
 	fmt.Printf("Serving %s\n", conn.RemoteAddr().String())
 	for {
-		netData, err := bufio.NewReader(conn).ReadString('\n')
+		message, err := bufio.NewReader(conn).ReadBytes('\n')
+
+		println(message)
 		if err != nil {
 			fmt.Println(err)
+			conn.Write([]byte("Error reading data: 500\n"))
 			return
 		}
-		message := strings.TrimSpace(netData)
-		testString := getHeaderBytes(message, 4)
-		message = parseMessage(message)
-		if message == "STOP" {
-			break
+
+		//message := strings.TrimSpace(netData)
+		if len(message) < HeaderByte {
+			conn.Write([]byte("Error: Message too short: 400\n"))
+			continue
 		}
-		_, err = conn.Write([]byte(string(message) + "Bytes = " + string(testString) + "\n"))
+
+		parseMessage(message)
+		//headerLength := netData[:HeaderByte]
+		//print(headerLength)
+		//message = parseMessage(message, []byte(netData[:HeaderByte]))
+		//
+		//if message == "STOP" {
+		//	break
+		//}
+
+		_, err = conn.Write([]byte(string(message) + "\n"))
 
 	}
 	conn.Close()
 }
 
 func main() {
-	listener, err := net.Listen("tcp4", ":8080")
+	listener, err := net.Listen("tcp", ":50000")
+
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+
 	defer listener.Close()
 
 	for {
@@ -41,11 +57,7 @@ func main() {
 			fmt.Println(err)
 			return
 		}
+
 		go handleConnection(conn)
 	}
-}
-
-func getHeaderBytes(message string, number int) []byte {
-	header := []byte(message)
-	return header[:number]
 }
