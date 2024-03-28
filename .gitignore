@@ -20,9 +20,9 @@
 # Go workspace file
 go.work
 
-# GoLand files
+# GoLand local
 .idea/
 .idea
 
-# MAC OS files
+# MAC OS local
 .DS_Store
