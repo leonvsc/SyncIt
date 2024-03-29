@@ -12,8 +12,8 @@ func handleConnection(conn net.Conn) {
 	fmt.Printf("Serving %s\n", conn.RemoteAddr().String())
 	for {
 		message, err := bufio.NewReader(conn).ReadBytes('\n')
-		test := bufio.NewScanner(conn).Bytes()
-		println(test)
+		//test := bufio.NewScanner(conn)
+		//println(test)
 
 		println(message)
 		if err != nil {
@@ -28,7 +28,9 @@ func handleConnection(conn net.Conn) {
 		}
 
 		parseMessage(message)
-		_, err = conn.Write([]byte(string(message) + "\n"))
+		returnMessage := responseMessage()
+		fmt.Println(returnMessage[:])
+		_, err = conn.Write(returnMessage[:])
 
 	}
 	conn.Close()

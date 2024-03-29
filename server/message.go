@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 func parseMessage(msg []byte) string {
 
-	headerLength := msg[:4]
+	headerLength := make([]byte, 4)
+	copy(headerLength, msg[:4])
+	fmt.Println(utf8.RuneCountInString(string(headerLength)))
 	println(string(headerLength))
 
 	headerInt, err := strconv.Atoi(string(headerLength))
