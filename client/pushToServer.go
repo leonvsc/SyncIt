@@ -9,14 +9,14 @@ import (
 func pushToServer(conn net.Conn) {
 	fmt.Println("Connected to server.")
 
-	localFilePath := "../local/input.txt"
+	localFilePath := "../local/image.png"
 	bodyResponseResult := bodyResponse(localFilePath)
 
 	contentLength := getContentLength(bodyResponseResult)
 	fileName := getFileName(localFilePath)
 	fileExtension := getFileExtension(localFilePath)
 
-	headerResponseResult := headerResponse("text/plain", contentLength, localFilePath, fileName, fileExtension)
+	headerResponseResult := headerResponse("image/png", contentLength, localFilePath, fileName, fileExtension)
 
 	// Convert byte array to string
 	bodyResponseString := string(bodyResponseResult)
