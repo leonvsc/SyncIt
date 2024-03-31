@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-func pullFromServer(conn net.Conn) {
+func pushToServer(conn net.Conn) {
 	fmt.Println("Connected to server.")
 
 	localFilePath := "../local/input.txt"
