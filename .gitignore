@@ -26,3 +26,5 @@ go.work
 
 # MAC OS local
 .DS_Store
+
+*.todo
