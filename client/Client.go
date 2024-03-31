@@ -2,11 +2,36 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"os"
 )
 
+var (
+	serverAddr string = "localhost:50000" // Change this to your server address
+	conn       net.Conn
+)
+
 func main() {
+	// Establish TCP connection
+	if err := establishConnection(); err != nil {
+		fmt.Println("Failed to connect to server:", err)
+		return
+	}
+	defer conn.Close()
+
 	runMainMenu()
+}
+
+func establishConnection() error {
+	var err error
+	conn, err = net.Dial("tcp", serverAddr)
+	return err
+}
+
+func closeConnection() {
+	if conn != nil {
+		conn.Close()
+	}
 }
 
 func runMainMenu() {
@@ -22,17 +47,18 @@ func runMainMenu() {
 
 	switch choice {
 	case 1:
-		sync()
+		sync(conn)
 	case 2:
 		runOptiesMenu()
 	case 3:
 		fmt.Println("Exiting program...")
+		closeConnection() // Close connection before exiting
 		os.Exit(0)
 	}
 }
 
 func runOptiesMenu() {
-	options := []string{"Sync server", "Program", "Back"}
+	options := []string{"Sync server", "Back"}
 	displayMenu(options)
 
 	var choice int
@@ -45,11 +71,8 @@ func runOptiesMenu() {
 	switch choice {
 	case 1:
 		fmt.Println("Executing sync server option...")
-		// Add your code for sync server option here
+		syncServer()
 	case 2:
-		fmt.Println("Executing program option...")
-		// Add your code for program option here
-	case 3:
 		runMainMenu()
 	}
 }
