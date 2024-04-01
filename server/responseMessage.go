@@ -10,7 +10,6 @@ import (
 
 func responseMessage() []byte {
 	//headerLength := 0004
-	//var f embed.FS
 	file, err := os.Open("files/test2.txt")
 	if err != nil {
 		fmt.Println(err)

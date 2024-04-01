@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -13,7 +14,7 @@ func parseMessage(msg []byte) string {
 	headerLength := make([]byte, 4)
 	copy(headerLength, msg[:4])
 	fmt.Println(utf8.RuneCountInString(string(headerLength)))
-	println(string(headerLength))
+	println("headerLength is: " + string(headerLength))
 
 	headerInt, err := strconv.Atoi(string(headerLength))
 	println(headerInt)
@@ -32,10 +33,7 @@ func parseMessage(msg []byte) string {
 
 	headerMap := make(map[string]string)
 
-	message := msg[headerInt:] // till the end of the message (get via the content length)
-	println(string(message))
-
-	scanner := bufio.NewScanner(strings.NewReader(string(message)))
+	scanner := bufio.NewScanner(strings.NewReader(string(header)))
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -73,6 +71,18 @@ func parseMessage(msg []byte) string {
 			return "Error: Unknown header field: 400\n"
 		}
 	}
+
+	contentLength, err := strconv.Atoi(headerMap["ContentLength"])
+	message := msg[headerInt:contentLength]
+
+	err = os.WriteFile(
+		headerMap["FileName"]+headerMap["FileExtension"],
+		message,
+		0755)
+	if err != nil {
+		fmt.Printf("Unable to write file: %v", err)
+	}
+	println(string(message))
 	println(headerMap)
 
 	return ""

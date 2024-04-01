@@ -12,8 +12,6 @@ func handleConnection(conn net.Conn) {
 	fmt.Printf("Serving %s\n", conn.RemoteAddr().String())
 	for {
 		message, err := bufio.NewReader(conn).ReadBytes('\n')
-		//test := bufio.NewScanner(conn)
-		//println(test)
 
 		println(message)
 		if err != nil {
