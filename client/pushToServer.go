@@ -47,8 +47,9 @@ func pushFileToServer(conn net.Conn, localFilePath string) {
 	contentLength := getContentLength(bodyResponseResult)
 	fileName := getFileName(localFilePath)
 	fileExtension := getFileExtension(localFilePath)
+	contentType := getContentType(localFilePath)
 
-	headerResponseResult := headerResponse("image/png", contentLength, localFilePath, fileName, fileExtension)
+	headerResponseResult := headerResponse(contentType, contentLength, localFilePath, fileName, fileExtension)
 
 	// Convert byte array to string
 	bodyResponseString := string(bodyResponseResult)
@@ -81,4 +82,19 @@ func getFileExtension(localFilePath string) string {
 	// Remove the dot from the extension
 	extension = extension[1:]
 	return extension
+}
+
+func getContentType(filePath string) string {
+	// Get the extension of the file
+	ext := filepath.Ext(filePath)
+
+	// Lookup the content type based on the extension
+	contentType := mime.TypeByExtension(ext)
+
+	// If the content type is not found, default to application/octet-stream
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+
+	return contentType
 }
