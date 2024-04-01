@@ -2,14 +2,46 @@ package main
 
 import (
 	"fmt"
+	"mime"
 	"net"
+	"os"
 	"path/filepath"
 )
 
-func pushToServer(conn net.Conn) {
-	fmt.Println("Connected to server.")
+func pushFolderToServer(conn net.Conn, folderPath string) {
+	// Get a list of files and directories in the folder
+	entries, err := os.ReadDir(folderPath)
+	if err != nil {
+		fmt.Println("Error reading folder:", err)
+		return
+	}
 
-	localFilePath := "../local/image.png"
+	for i, entry := range entries {
+		// Construct the full path of the entry
+		entryPath := filepath.Join(folderPath, entry.Name())
+
+		if entry.IsDir() {
+			// If the entry is a directory, recursively call pushFolderToServer
+			pushFolderToServer(conn, entryPath)
+		} else {
+			// If the entry is a file, push it to the server
+			pushFileToServer(conn, entryPath)
+
+			// Add a delimiter between files (except for the last file)
+			if i < len(entries)-1 {
+				conn.Write([]byte("\n\n"))
+			}
+		}
+	}
+
+	// Add a delimiter after syncing the folder
+	conn.Write([]byte("\n\n"))
+	fmt.Println("Folder synced successfully.")
+}
+
+func pushFileToServer(conn net.Conn, localFilePath string) {
+	fmt.Println("Syncing file:", localFilePath)
+
 	bodyResponseResult := bodyResponse(localFilePath)
 
 	contentLength := getContentLength(bodyResponseResult)
@@ -22,19 +54,16 @@ func pushToServer(conn net.Conn) {
 	bodyResponseString := string(bodyResponseResult)
 
 	// Concatenate header response, newline character, and body response string
-	finalResponse := headerResponseResult + "\n" + bodyResponseString
-
-	// Print or do something with finalResponse
-	//fmt.Println(finalResponse)
+	finalResponse := []byte(headerResponseResult + "\n" + bodyResponseString)
 
 	// Send response to the server
-	_, err := conn.Write([]byte(finalResponse))
+	_, err := conn.Write(finalResponse)
 	if err != nil {
-		fmt.Println("Error sending data:", err)
+		fmt.Println("Error sending data for file", localFilePath, ":", err)
 		return
 	}
 
-	fmt.Println("Data sent successfully.")
+	fmt.Println("File", localFilePath, "sent successfully.")
 }
 
 func getContentLength(bodyResponse []byte) int {
