@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func responseMessage() []byte {
+func sendFile() []byte {
 	//headerLength := 0004
 	file, err := os.Open("files/test2.txt")
 	if err != nil {
@@ -37,6 +37,25 @@ func responseMessage() []byte {
 	fmt.Println(bs)
 	fmt.Println(stat.Size())
 
+	header := createHeader(fileExtension, int(stat.Size()), fileName)
+
+	headerLength := len(header)
+	lengthBytes := make([]byte, 4)
+	binary.BigEndian.PutUint32(lengthBytes, uint32(headerLength))
+	return []byte(string(lengthBytes) + header + string(bs))
+}
+
+func sendOkToClient() []byte {
+	response := "\n200: message received"
+	responseLength := len(response)
+	header := createHeader("", responseLength, "")
+	headerLength := len(header)
+	lengthBytes := make([]byte, 4)
+	binary.BigEndian.PutUint32(lengthBytes, uint32(headerLength))
+	return []byte(string(lengthBytes) + header + response)
+}
+
+func createHeader(fileExtension string, contentLength int, fileName string) string {
 	header := fmt.Sprintf(
 		`POST SFTP 1.0
 		ContentType: %s
@@ -48,7 +67,7 @@ func responseMessage() []byte {
 		FileExtension: %s
 		Authorization: %s`,
 		fileExtension,
-		stat.Size(),
+		contentLength,
 		fileName,
 		"0dada1dc-cb0a-463a-b028-7d04a8a5d3e4",
 		fileName,
@@ -56,15 +75,5 @@ func responseMessage() []byte {
 		fileExtension,
 		"Bearer")
 
-	headerLength := len(header)
-	//headerBytes := make([]byte, headerLength)
-	//_, err = bufio.NewReader(header).Read(headerBytes)
-	lengthBytes := make([]byte, 4)
-	binary.BigEndian.PutUint32(lengthBytes, uint32(headerLength))
-	fmt.Println(lengthBytes)
-	return []byte(string(lengthBytes) + header + string(bs))
-}
-
-func messageToClients() []byte {
-	return []byte("This is a response message")
+	return header
 }
