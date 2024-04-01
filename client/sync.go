@@ -2,8 +2,10 @@ package main
 
 import "net"
 
+var folderPath = "../local"
+
 func sync(conn net.Conn) {
-	pushToServer(conn)
+	//pushFolderToServer(conn, folderPath)
 	pullFromServer(conn)
-	runMainMenu()
+	//runMainMenu()
 }

@@ -25,6 +25,8 @@ func pullFromServer(conn net.Conn) {
 		return
 	}
 
+	//println(string(response[:n]))
+
 	// Process the response
 	processResponse(string(response[:n]))
 
@@ -65,45 +67,64 @@ func generateGetHeader() string {
 
 func processResponse(response string) {
 	// Split the response into lines
-	lines := strings.Split(response, "\\n")
+	lines := strings.Split(response, "\n")
 
 	// Process each line of the response
-	var contentType, contentLength, path, guid, fileName, fileSystem, fileExtension, authorization, body string
+	var contentType, contentLength, path, guid, fileName, fileSystem, fileExtension, authorization string
+
+	var body []string // Store body content
+	var statusCode []string
+
+	// Skip the first line since it's part of the header
+	headerSkipped := false
 
 	for _, line := range lines {
-		// Split each line by ": "
-		parts := strings.Split(line, ":")
-		if len(parts) != 2 {
-			continue
-		}
-		key := strings.TrimSpace(parts[0])
-		value := strings.TrimSpace(parts[1])
+		// Check if the line contains ": "
+		if strings.Contains(line, ": ") {
+			// Split each line by ": "
+			parts := strings.Split(line, ": ")
+			if len(parts) != 2 {
+				continue
+			}
+			key := strings.TrimSpace(parts[0])
+			value := strings.TrimSpace(parts[1])
 
-		// Assign values to corresponding variables
-		switch key {
-		case "ContentType":
-			contentType = value
-		case "ContentLength":
-			contentLength = value
-		case "Path":
-			path = value
-		case "GUID":
-			guid = value
-		case "FileName":
-			fileName = value
-		case "FileSystem":
-			fileSystem = value
-		case "FileExtension":
-			fileExtension = value
-		case "Authorization":
-			authorization = value
+			// Assign values to corresponding variables
+			switch key {
+			case "ContentType":
+				contentType = value
+			case "ContentLength":
+				contentLength = value
+			case "Path":
+				path = value
+			case "GUID":
+				guid = value
+			case "FileName":
+				fileName = value
+			case "FileSystem":
+				fileSystem = value
+			case "FileExtension":
+				fileExtension = value
+			case "Authorization":
+				authorization = value
+			}
+		} else {
+			// If the header has been skipped, include the line in the body content
+			if headerSkipped {
+				body = append(body, line)
+			} else {
+				headerSkipped = true
+				statusCode = append(statusCode, line)
+			}
 		}
 	}
 
-	lastIndex := len(lines) - 1
-	body = lines[lastIndex]
+	// Join the body content
+	bodyContent := strings.Join(body, "\n")
+	statusCodeContent := strings.Join(statusCode, "\n")
 
 	// Print the values
+	fmt.Println(statusCodeContent)
 	fmt.Println("ContentType:", contentType)
 	fmt.Println("ContentLength:", contentLength)
 	fmt.Println("Path:", path)
@@ -112,9 +133,10 @@ func processResponse(response string) {
 	fmt.Println("FileSystem:", fileSystem)
 	fmt.Println("FileExtension:", fileExtension)
 	fmt.Println("Authorization:", authorization)
-	fmt.Println("Body:", body)
+	fmt.Println("Body:", bodyContent)
 
-	generateFile(path, fileName, body)
+	// Call function to generate file
+	generateFile(path, fileName, bodyContent)
 }
 
 func generateFile(path, fileName, body string) error {
