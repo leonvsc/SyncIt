@@ -8,7 +8,7 @@ import (
 )
 
 func TestGenerateGetHeader(t *testing.T) {
-	expected := "0012\nGET SFTP 1.0"
+	expected := "0200\nRequestType: GET\nContentType: text/plain\nContentLength: 21\nPath: files/test2.txt\nGUID: 0dada1dc-cb0a-463a-b028-7d04a8a5d3e4\nFileName: test2.txt\nFileSystem: Unix\nFileExtension: .txt\nAuthorization: null"
 	generated := generateGetHeader()
 	if generated != expected {
 		t.Errorf("generateGetHeader() = %s; want %s", generated, expected)
