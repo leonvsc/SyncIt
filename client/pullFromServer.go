@@ -25,21 +25,23 @@ func pullFromServer(conn net.Conn) {
 		return
 	}
 
-	//println(string(response[:n]))
-
 	// Process the response
 	processResponse(string(response[:n]))
-
-	// generate get request
-
-	// receive response
-
-	// generate file from response
 }
 
 func generateGetHeader() string {
 	// Construct the request string
-	requestString := fmt.Sprintf(`GET SFTP 1.0`)
+	//requestString := fmt.Sprintf(`GET SFTP 1.0`)
+
+	requestString := fmt.Sprintf(`RequestType: GET
+ContentType: text/plain
+ContentLength: 21
+Path: files/test2.txt
+GUID: 0dada1dc-cb0a-463a-b028-7d04a8a5d3e4
+FileName: test2.txt
+FileSystem: Unix
+FileExtension: .txt
+Authorization: null`)
 
 	// Convert the request string to a byte array
 	byteArray := []byte(requestString)
@@ -136,7 +138,10 @@ func processResponse(response string) {
 	fmt.Println("Body:", bodyContent)
 
 	// Call function to generate file
-	generateFile(path, fileName, bodyContent)
+	err := generateFile(path, fileName, bodyContent)
+	if err != nil {
+		return
+	}
 }
 
 func generateFile(path, fileName, body string) error {
