@@ -9,6 +9,8 @@ import (
 var (
 	serverAddr string = "localhost:50000" // Change this to your server address
 	conn       net.Conn
+	folderPath = "../local"
+	filePath   = "../local/input.txt"
 )
 
 func main() {
@@ -47,13 +49,36 @@ func runMainMenu() {
 
 	switch choice {
 	case 1:
-		sync(conn)
+		runSyncMenu()
 	case 2:
 		runOptiesMenu()
 	case 3:
 		fmt.Println("Exiting program...")
 		closeConnection() // Close connection before exiting
 		os.Exit(0)
+	}
+}
+
+func runSyncMenu() {
+	options := []string{"Push Folder", "Push File", "Pull from server", "Back"}
+	displayMenu(options)
+
+	var choice int
+	_, err := fmt.Scanln(&choice)
+	if err != nil || choice < 1 || choice > len(options) {
+		fmt.Println("Invalid choice. Please enter a valid option number.")
+		return
+	}
+
+	switch choice {
+	case 1:
+		pushFolderToServer(conn, folderPath)
+	case 2:
+		pushFileToServer(conn, filePath)
+	case 3:
+		pullFromServer(conn)
+	case 4:
+		runMainMenu()
 	}
 }
 
