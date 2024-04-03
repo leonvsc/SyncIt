@@ -2,15 +2,14 @@ package main
 
 import (
 	"bufio"
-	"encoding/binary"
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 )
 
-func sendFile() []byte {
-	//headerLength := 0004
-	file, err := os.Open("files/test2.txt")
+func sendFile(headerMap map[string]string) []byte {
+	file, err := os.Open(headerMap["Path"])
 	if err != nil {
 		fmt.Println(err)
 		return nil
@@ -26,7 +25,6 @@ func sendFile() []byte {
 		fmt.Println(err)
 		return nil
 	}
-	//println(stat.Size())
 
 	bs := make([]byte, stat.Size())
 	_, err = bufio.NewReader(file).Read(bs)
@@ -36,13 +34,9 @@ func sendFile() []byte {
 	}
 	fmt.Println(bs)
 	fmt.Println(stat.Size())
-
 	header := createHeader(fileExtension, int(stat.Size()), fileName)
-
 	headerLength := len(header)
-	lengthBytes := make([]byte, 4)
-	binary.BigEndian.PutUint32(lengthBytes, uint32(headerLength))
-	return []byte(string(lengthBytes) + header + string(bs))
+	return []byte(strconv.Itoa(headerLength) + header + string(bs))
 }
 
 func sendOkToClient() []byte {
@@ -50,9 +44,7 @@ func sendOkToClient() []byte {
 	responseLength := len(response)
 	header := createHeader("", responseLength, "")
 	headerLength := len(header)
-	lengthBytes := make([]byte, 4)
-	binary.BigEndian.PutUint32(lengthBytes, uint32(headerLength))
-	return []byte(string(lengthBytes) + header + response)
+	return []byte(strconv.Itoa(headerLength) + header + response)
 }
 
 func createHeader(fileExtension string, contentLength int, fileName string) string {

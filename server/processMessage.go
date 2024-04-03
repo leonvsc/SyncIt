@@ -2,10 +2,8 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"strconv"
 	"strings"
-	"unicode/utf8"
 )
 
 func processMessage(scanner *bufio.Scanner, headerMap map[string]string) []byte {
@@ -14,7 +12,7 @@ func processMessage(scanner *bufio.Scanner, headerMap map[string]string) []byte 
 	length := 0
 
 	for scanner.Scan() {
-		if scanner.Bytes() == nil {
+		if scanner.Bytes() == nil || len(scanner.Bytes()) <= 4 {
 			continue
 		}
 
@@ -23,23 +21,16 @@ func processMessage(scanner *bufio.Scanner, headerMap map[string]string) []byte 
 		if count == 0 {
 			headerLength := make([]byte, 4)
 			copy(headerLength, line[:4])
-			fmt.Println(utf8.RuneCountInString(string(headerLength)))
-			println("headerLength is: " + string(headerLength))
 			HeaderLength, _ = strconv.Atoi(string(headerLength))
-			fmt.Println("HeaderCount is: ", HeaderLength)
 			parseRequestType(line, headerMap)
 		}
 
-		// Process each line individually
-		fmt.Println(line)
 		count += len(line)
-
 		parseHeader(line, headerMap)
 
 		if headerMap["ContentLength"] != "" {
 			contentLength, _ := strconv.Atoi(headerMap["ContentLength"])
 			length = contentLength + HeaderLength
-			fmt.Println("Length is: ", length)
 		}
 
 		message = append(message, scanner.Bytes()...)

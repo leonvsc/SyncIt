@@ -15,7 +15,7 @@ func handleConnection(conn net.Conn) {
 		message := processMessage(scanner, headerMap)
 
 		if headerMap["RequestType"] == "GET" {
-			returnMessage := sendFile()
+			returnMessage := sendFile(headerMap)
 			_, _ = conn.Write(returnMessage[:])
 		}
 		if headerMap["RequestType"] == "POST" {
