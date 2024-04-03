@@ -18,7 +18,7 @@ func pullFromServer(conn net.Conn) {
 	}
 
 	// Read the response from the server
-	response := make([]byte, 1024) // Adjust buffer size according to your needs
+	response := make([]byte, 1024)
 	n, err := conn.Read(response)
 	if err != nil {
 		fmt.Println("Error reading response:", err)
@@ -31,8 +31,7 @@ func pullFromServer(conn net.Conn) {
 
 func generateGetHeader() string {
 	// Construct the request string
-	//requestString := fmt.Sprintf(`GET SFTP 1.0`)
-
+	
 	requestString := fmt.Sprintf(`RequestType: GET
 ContentType: text/plain
 ContentLength: 21
