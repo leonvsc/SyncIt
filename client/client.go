@@ -37,7 +37,7 @@ func closeConnection() {
 }
 
 func runMainMenu() {
-	options := []string{"Synchroniseren", "Opties", "Afsluiten"}
+	options := []string{"Sync", "Options", "Quit"}
 	displayMenu(options)
 
 	var choice int

@@ -56,13 +56,13 @@ Authorization: null`)
 	// Get the last value of lengthBytes
 	lastByte := lengthBytes[3] // 3 is de index van het laatste element in de slice
 
-	// Converteer de laatste byte naar een string
+	// Convert the last byte into a string
 	lastValue := strconv.Itoa(int(lastByte))
 
-	// Voeg nullen toe aan de linkerkant om een getal van 4 cijfers te krijgen
+	// Add zero's to the left to create a digit with 4 digits
 	paddedLastValue := fmt.Sprintf("%04s", lastValue)
 
-	// Print het resultaat
+	// Print the result
 	result := paddedLastValue + "\n" + requestString
 	return result
 }
