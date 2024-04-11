@@ -7,21 +7,24 @@ import (
 )
 
 var (
-	serverAddr string = "localhost:50000" // Change this to your server address
+	serverAddr string
 	conn       net.Conn
 	folderPath = "../local"
 	filePath   = "../local/input.txt"
 )
 
 func main() {
+	runMainMenu()
+}
+
+func makeConnection() {
 	// Establish TCP connection
 	if err := establishConnection(); err != nil {
 		fmt.Println("Failed to connect to server:", err)
 		return
 	}
 	defer conn.Close()
-
-	runMainMenu()
+	runSyncMenu()
 }
 
 func establishConnection() error {
@@ -37,7 +40,7 @@ func closeConnection() {
 }
 
 func runMainMenu() {
-	options := []string{"Sync", "Options", "Quit"}
+	options := []string{"Connect to server", "Sync", "Options", "Quit"}
 	displayMenu(options)
 
 	var choice int
@@ -49,10 +52,12 @@ func runMainMenu() {
 
 	switch choice {
 	case 1:
-		runSyncMenu()
+		makeConnection()
 	case 2:
-		runOptiesMenu()
+		runSyncMenu()
 	case 3:
+		runOptiesMenu()
+	case 4:
 		fmt.Println("Exiting program...")
 		closeConnection() // Close connection before exiting
 		os.Exit(0)
@@ -83,7 +88,7 @@ func runSyncMenu() {
 }
 
 func runOptiesMenu() {
-	options := []string{"Sync server", "Back"}
+	options := []string{"Set sync server", "Show current sync server", "Back"}
 	displayMenu(options)
 
 	var choice int
@@ -95,9 +100,10 @@ func runOptiesMenu() {
 
 	switch choice {
 	case 1:
-		fmt.Println("Executing sync server option...")
 		syncServer()
 	case 2:
+		showCurrentServer()
+	case 3:
 		runMainMenu()
 	}
 }
