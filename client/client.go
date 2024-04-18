@@ -24,6 +24,7 @@ func makeConnection() {
 		return
 	}
 	defer conn.Close()
+	authorization()
 	runSyncMenu()
 }
 
