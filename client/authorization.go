@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
+	"strings"
 )
 
 var (
@@ -37,5 +38,40 @@ Authorization: %s`, base64Username)
 		return
 	}
 
-	//TODO: Receive response code from server and process the code.
+	// Read response from the server
+	response := make([]byte, 1024) // Adjust the buffer size as per your requirement
+	_, err = conn.Read(response)
+	if err != nil {
+		fmt.Println("Error reading response:", err)
+		return
+	}
+
+	// Extract status code from the response
+	statusCode := extractStatusCode(response)
+
+	// Check status code and act accordingly
+	if statusCode == "200" {
+		// Resume program
+		fmt.Println("Authorization successful")
+		runSyncMenu()
+	} else {
+		// Throw error code
+		fmt.Println("Authorization error:", statusCode)
+		runMainMenu()
+	}
+}
+
+func extractStatusCode(response []byte) string {
+	lines := strings.Split(string(response), "\n")
+	for _, line := range lines {
+		if strings.HasPrefix(line, "Statuscode:") {
+			parts := strings.Split(line, ":")
+			if len(parts) == 2 {
+				return strings.TrimSpace(parts[1])
+			}
+		}
+	}
+	return "" // Status code not founding
+
+	// TODO: give a real error and make it more user friendly with clearing the screen or something after each print.
 }

@@ -25,7 +25,6 @@ func makeConnection() {
 	}
 	defer conn.Close()
 	authorization()
-	runSyncMenu()
 }
 
 func establishConnection() error {
