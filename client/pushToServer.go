@@ -42,17 +42,27 @@ func pushFolderToServer(conn net.Conn, folderPath string) {
 func pushFileToServer(conn net.Conn, localFilePath string) {
 	fmt.Println("Syncing file:", localFilePath)
 
-	bodyResponseResult := bodyResponse(localFilePath)
+	bodyResult := createBody(localFilePath)
 
-	contentLength := getContentLength(bodyResponseResult)
+	contentLength := getContentLength(bodyResult)
 	fileName := getFileName(localFilePath)
 	fileExtension := getFileExtension(localFilePath)
 	contentType := getContentType(localFilePath)
 
-	headerResponseResult := headerResponse(contentType, contentLength, localFilePath, fileName, fileExtension)
+	requestString := fmt.Sprintf(`POST SFTP 1.0
+	ContentType: %s
+	ContentLength: %d
+	Path: %s
+	GUID: 0dada1dc-cb0a-463a-b028-7d04a8a5d3e4
+	FileName: %s
+	FileSystem: Unix
+	FileExtension: %s
+	Authorization: null`, contentType, contentLength, localFilePath, fileName, fileExtension)
+
+	headerResponseResult := createHeaders(requestString)
 
 	// Convert byte array to string
-	bodyResponseString := string(bodyResponseResult)
+	bodyResponseString := string(bodyResult)
 
 	// Concatenate header response, newline character, and body response string
 	finalResponse := []byte(headerResponseResult + "\n" + bodyResponseString)

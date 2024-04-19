@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func bodyResponse(localPath string) []byte {
+func createBody(localPath string) []byte {
 	// Read the textfile in a byte array
 	fileContent, err := os.ReadFile(localPath)
 	if err != nil {
