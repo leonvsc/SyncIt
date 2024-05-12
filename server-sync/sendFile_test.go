@@ -11,13 +11,14 @@ import (
 
 func TestSendFile(t *testing.T) {
 	// Given
+	port := findPort(t)
 	testFileContent := []byte("This is a test file.")
 	testFilePath := "testFile.txt"
 	file, err := os.Create(testFilePath)
 	_, err = file.Write(testFileContent)
 	file.Close()
-	listener := mockStartServer(t)
-	client := mockStartClient(t)
+	listener := mockStartServer(t, port)
+	client := mockStartClient(t, port)
 
 	// When
 	conn, err := listener.Accept()

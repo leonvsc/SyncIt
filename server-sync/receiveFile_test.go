@@ -8,10 +8,11 @@ import (
 
 func TestReceiveFile(t *testing.T) {
 	// Given
+	port := findPort(t)
 	testFileContent := []byte("This is a test file.")
 	testFilePath := "testFile.txt"
-	listener := mockStartServer(t)
-	client := mockStartClient(t)
+	listener := mockStartServer(t, port)
+	client := mockStartClient(t, port)
 
 	// When
 	client.Write(testFileContent)

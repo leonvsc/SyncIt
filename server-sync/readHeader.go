@@ -15,7 +15,9 @@ func readHeader(conn net.Conn) map[string]string {
 
 	getHeaderLength(text, headerMap)
 	parseRequestType(text, headerMap)
-	fmt.Println("Header: ", text)
+	for _, line := range strings.Split(text, "\n") {
+		parseHeader(line, headerMap)
+	}
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -41,8 +43,30 @@ func parseRequestType(line string, headerMap map[string]string) {
 		headerMap["RequestType"] = "PUT"
 	case strings.Contains(line, "DELETE"):
 		headerMap["RequestType"] = "DELETE"
-	case strings.Contains(line, "PUTHEALTH"):
-		headerMap["RequestType"] = "PUTHEALTH"
+	default:
+	}
+}
+
+func parseHeader(line string, headerMap map[string]string) {
+	switch {
+	case strings.Contains(line, "RequestType"):
+		headerMap["RequestType"] = strings.Split(line, ": ")[1]
+	case strings.Contains(line, "ContentLength"):
+		headerMap["ContentLength"] = strings.Split(line, ": ")[1]
+	case strings.Contains(line, "GUID"):
+		headerMap["GUID"] = strings.Split(line, ": ")[1]
+	case strings.Contains(line, "Path"):
+		headerMap["Path"] = strings.Split(line, ": ")[1]
+	case strings.Contains(line, "FileSystem"):
+		headerMap["FileSystem"] = strings.Split(line, ": ")[1]
+	case strings.Contains(line, "FileName"):
+		headerMap["FileName"] = strings.Split(line, ": ")[1]
+	case strings.Contains(line, "FileExtension"):
+		headerMap["FileExtension"] = strings.Split(line, ": ")[1]
+	case strings.Contains(line, "Authorisation"):
+		headerMap["Authorisation"] = strings.Split(line, ": ")[1]
+	case strings.Contains(line, "MimeType"):
+		headerMap["MimeType"] = strings.Split(line, ": ")[1]
 	default:
 	}
 }
