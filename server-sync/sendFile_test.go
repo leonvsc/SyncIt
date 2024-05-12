@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"strconv"
 	"testing"
 )
 
@@ -13,7 +14,10 @@ func TestSendFile(t *testing.T) {
 	// Given
 	port := findPort(t)
 	testFileContent := []byte("This is a test file.")
+	contentLength := len(testFileContent)
+	fmt.Println("Content Length: ", contentLength)
 	testFilePath := "testFile.txt"
+	headerMap := map[string]string{"HeaderLength": "0", "ContentLength": strconv.Itoa(contentLength)}
 	file, err := os.Create(testFilePath)
 	_, err = file.Write(testFileContent)
 	file.Close()
@@ -25,9 +29,8 @@ func TestSendFile(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	err = sendFile(conn, testFilePath)
-	conn.Close()
-	fileContent, err := mockClientRead(client)
+	err = sendFile(conn, testFilePath, headerMap)
+	fileContent, err := mockClientRead(client, int64(contentLength))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,10 +43,28 @@ func TestSendFile(t *testing.T) {
 	err = os.Remove(testFilePath)
 }
 
-func mockClientRead(conn net.Conn) ([]byte, error) {
+func TestSendFileTotalLength(t *testing.T) {
+	// Given
+	headerMap := map[string]string{"HeaderLength": "20", "ContentLength": "21", "FilePath": "testFile.txt"}
+	headerLength, _ := strconv.Atoi(headerMap["HeaderLength"])
+	contentLength, _ := strconv.Atoi(headerMap["ContentLength"])
+	lengthGiven := headerLength + contentLength
+
+	// When
+	length := totalLength(headerMap)
+
+	// Then
+	if !bytes.Equal([]byte(strconv.Itoa(length)), []byte(strconv.Itoa(lengthGiven))) {
+		t.Error("The total length of the file sent and the file received are not equal.")
+	}
+
+}
+
+func mockClientRead(conn net.Conn, length int64) ([]byte, error) {
 	buffer := make([]byte, 1024*1024) // 1 MB buffer size
 	message := make([]byte, 0)
-	for {
+	bytesSent := int64(0)
+	for bytesSent < length {
 		bytesRead, err := conn.Read(buffer)
 		println("bytesRead: ", bytesRead)
 		if err != nil {
@@ -53,6 +74,7 @@ func mockClientRead(conn net.Conn) ([]byte, error) {
 			return nil, err
 		}
 		message = append(message, buffer[:bytesRead]...)
+		bytesSent += int64(bytesRead)
 	}
 	conn.Close()
 	return message, nil

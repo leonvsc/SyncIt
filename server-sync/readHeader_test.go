@@ -6,20 +6,16 @@ import (
 	"testing"
 )
 
-var headerMap = make(map[string]string)
-
 func TestReadHeaderRequestType(t *testing.T) {
+	// Loop through all the request types to ensure that the header is read correctly
 	// Given
-	header := "0003GET"
-	//requestType := "GET"
-
-	requestTypes := []string{"GET", "POST", "PUT", "DELETE"}
+	headerMap := make(map[string]string)
+	requestTypes := []string{"GET", "POST", "PUT", "DELETE", ""}
 	for _, requestType := range requestTypes {
 		port := findPort(t)
-		fmt.Println("Port: ", port)
 		listener := mockStartServer(t, port)
 		client := mockStartClient(t, port)
-		header = "0003" + requestType
+		header := "0003" + requestType
 
 		// When
 		client.Write([]byte(header))
@@ -42,6 +38,7 @@ func TestReadHeaderRequestType(t *testing.T) {
 
 func TestReadHeaderLength(t *testing.T) {
 	// Given
+	headerMap := make(map[string]string)
 	port := findPort(t)
 	header := "0003GET"
 	length := "3"
@@ -68,6 +65,7 @@ func TestReadHeaderLength(t *testing.T) {
 
 func TestReadHeaderLines(t *testing.T) {
 	// Given
+	headerMap := make(map[string]string)
 	port := findPort(t)
 	header := "0003GET \n" +
 		"RequestType: GET\n" +
@@ -80,7 +78,6 @@ func TestReadHeaderLines(t *testing.T) {
 		"Authorisation: Basic\n" +
 		"MimeType: text/plain\n"
 
-	//contentLength := "100"
 	content := make(map[string]string)
 	content["RequestType"] = "GET"
 	content["ContentLength"] = "100"
@@ -102,6 +99,7 @@ func TestReadHeaderLines(t *testing.T) {
 	}
 	headerMap = readHeader(conn)
 
+	// Then
 	for key, value := range headerMap {
 		fmt.Println("Value: ", value)
 		fmt.Println("Content key: ", content[key])
@@ -111,14 +109,7 @@ func TestReadHeaderLines(t *testing.T) {
 		if !bytes.Equal([]byte(content[key]), []byte(value)) {
 			t.Error("The header sent and the header received are not equal.")
 		}
-		//if !bytes.Equal([]byte(contentLength), []byte(value)) {
-		//	t.Error("The header sent and the header received are not equal.")
-		//}
 	}
-	// Then
-	//if !bytes.Equal([]byte(contentLength), []byte(headerMap["ContentLength"])) {
-	//	t.Error("The header sent and the header received are not equal.")
-	//}
 
 	// Clean up
 	client.Close()
