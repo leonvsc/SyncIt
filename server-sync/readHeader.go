@@ -43,6 +43,8 @@ func parseRequestType(line string, headerMap map[string]string) {
 		headerMap["RequestType"] = "PUT"
 	case strings.Contains(line, "DELETE"):
 		headerMap["RequestType"] = "DELETE"
+	case strings.Contains(line, "AUTH"):
+		headerMap["RequestType"] = "AUTH"
 	default:
 	}
 }

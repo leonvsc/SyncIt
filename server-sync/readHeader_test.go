@@ -10,7 +10,7 @@ func TestReadHeaderRequestType(t *testing.T) {
 	// Loop through all the request types to ensure that the header is read correctly
 	// Given
 	headerMap := make(map[string]string)
-	requestTypes := []string{"GET", "POST", "PUT", "DELETE", ""}
+	requestTypes := []string{"GET", "POST", "PUT", "DELETE", "AUTH", ""}
 	for _, requestType := range requestTypes {
 		port := findPort(t)
 		listener := mockStartServer(t, port)
