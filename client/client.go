@@ -10,7 +10,7 @@ var (
 	serverAddr string
 	conn       net.Conn
 	folderPath = "../local"
-	filePath   = "../local/input.txt"
+	filePath   = "../local/input2.txt"
 )
 
 func main() {
@@ -24,7 +24,8 @@ func makeConnection() {
 		return
 	}
 	defer conn.Close()
-	authorization()
+	//authorization()
+	runSyncMenu()
 }
 
 func establishConnection() error {

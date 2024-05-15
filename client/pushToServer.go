@@ -42,7 +42,7 @@ func pushFolderToServer(conn net.Conn, folderPath string) {
 func pushFileToServer(conn net.Conn, localFilePath string) {
 	fmt.Println("Syncing file:", localFilePath)
 
-	bodyResult := createBody(localFilePath)
+	bodyResult, _ := createBody2(localFilePath)
 
 	contentLength := getContentLength(bodyResult)
 	fileName := getFileName(localFilePath)
@@ -67,13 +67,22 @@ func pushFileToServer(conn net.Conn, localFilePath string) {
 	// Concatenate header response, newline character, and body response string
 	finalResponse := []byte(headerResponseResult + "\n" + bodyResponseString)
 
-	// Send response to the server
-	_, err := conn.Write(finalResponse)
-	if err != nil {
-		fmt.Println("Error sending data for file", localFilePath, ":", err)
-		return
-	}
+	chunkSize := 10
 
+	for i := 0; i < len(finalResponse); i += chunkSize {
+		end := i + chunkSize
+		if end > len(finalResponse) {
+			end = len(finalResponse)
+		}
+		chunk := finalResponse[i:end]
+
+		// Send the chunk
+		_, err := conn.Write(chunk)
+		if err != nil {
+			fmt.Println("Error sending data:", err)
+			return
+		}
+	}
 	fmt.Println("File", localFilePath, "sent successfully.")
 }
 
