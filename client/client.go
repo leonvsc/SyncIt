@@ -10,7 +10,7 @@ var (
 	serverAddr string
 	conn       net.Conn
 	folderPath = "../local"
-	filePath   = "../local/input2.txt"
+	filePath   = "../local/input4.txt"
 )
 
 func main() {
@@ -80,7 +80,10 @@ func runSyncMenu() {
 	case 1:
 		pushFolderToServer(conn, folderPath)
 	case 2:
-		pushFileToServer(conn, filePath)
+		err := sendFile(filePath, conn)
+		if err != nil {
+			return
+		}
 	case 3:
 		pullFromServer(conn)
 	case 4:

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"mime"
 	"net"
 	"os"
 	"path/filepath"
@@ -44,7 +43,7 @@ func pushFileToServer(conn net.Conn, localFilePath string) {
 
 	bodyResult, _ := createBody2(localFilePath)
 
-	contentLength := getContentLength(bodyResult)
+	contentLength := getContentLength(string(bodyResult))
 	fileName := getFileName(localFilePath)
 	fileExtension := getFileExtension(localFilePath)
 	contentType := getContentType(localFilePath)
@@ -63,6 +62,13 @@ func pushFileToServer(conn net.Conn, localFilePath string) {
 
 	// Convert byte array to string
 	bodyResponseString := string(bodyResult)
+
+	test1 := []byte("Test")
+	test2 := []byte("Test2")
+
+	result := append(test1, test2...)
+
+	conn.Write(result)
 
 	// Concatenate header response, newline character, and body response string
 	finalResponse := []byte(headerResponseResult + "\n" + bodyResponseString)
@@ -86,34 +92,34 @@ func pushFileToServer(conn net.Conn, localFilePath string) {
 	fmt.Println("File", localFilePath, "sent successfully.")
 }
 
-func getContentLength(bodyResponse []byte) int {
-	length := len(bodyResponse)
-	return length
-}
-
-func getFileName(localFilePath string) string {
-	fileName := filepath.Base(localFilePath)
-	return fileName
-}
-
-func getFileExtension(localFilePath string) string {
-	extension := filepath.Ext(localFilePath)
-	// Remove the dot from the extension
-	extension = extension[1:]
-	return extension
-}
-
-func getContentType(filePath string) string {
-	// Get the extension of the file
-	ext := filepath.Ext(filePath)
-
-	// Lookup the content type based on the extension
-	contentType := mime.TypeByExtension(ext)
-
-	// If the content type is not found, default to application/octet-stream
-	if contentType == "" {
-		contentType = "application/octet-stream"
-	}
-
-	return contentType
-}
+//func getContentLength(bodyResponse []byte) int {
+//	length := len(bodyResponse)
+//	return length
+//}
+//
+//func getFileName(localFilePath string) string {
+//	fileName := filepath.Base(localFilePath)
+//	return fileName
+//}
+//
+//func getFileExtension(localFilePath string) string {
+//	extension := filepath.Ext(localFilePath)
+//	// Remove the dot from the extension
+//	extension = extension[1:]
+//	return extension
+//}
+//
+//func getContentType(filePath string) string {
+//	// Get the extension of the file
+//	ext := filepath.Ext(filePath)
+//
+//	// Lookup the content type based on the extension
+//	contentType := mime.TypeByExtension(ext)
+//
+//	// If the content type is not found, default to application/octet-stream
+//	if contentType == "" {
+//		contentType = "application/octet-stream"
+//	}
+//
+//	return contentType
+//}
