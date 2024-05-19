@@ -10,7 +10,7 @@ var (
 	serverAddr string
 	conn       net.Conn
 	folderPath = "../local"
-	filePath   = "../local/input4.txt"
+	filePath   = "../local/input3.txt"
 )
 
 func main() {

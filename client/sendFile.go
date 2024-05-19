@@ -41,6 +41,13 @@ func generateBody(localFilePath string, headers []byte, conn net.Conn) error {
 		return fmt.Errorf("error sending headers: %w", err)
 	}
 
+	// Fill with content length
+	length := int64(100)
+
+	// Var to count amount of bytes send
+	bytesSent := int64(0)
+	bytesRead := int64(0)
+
 	file, err := os.Open(localFilePath)
 	if err != nil {
 		return fmt.Errorf("error opening file: %w", err)
@@ -50,9 +57,12 @@ func generateBody(localFilePath string, headers []byte, conn net.Conn) error {
 	chunkSize := 1024 * 1024 * 100
 
 	buffer := make([]byte, chunkSize)
-	for {
+	for bytesSent < length {
 		n, err := file.Read(buffer)
-		if err != nil && err != io.EOF {
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
 			return fmt.Errorf("error reading file: %w", err)
 		}
 		if n == 0 {
@@ -62,6 +72,7 @@ func generateBody(localFilePath string, headers []byte, conn net.Conn) error {
 		if err != nil {
 			return fmt.Errorf("error sending file chunk: %w", err)
 		}
+		bytesSent += int64(bytesRead)
 	}
 
 	fmt.Println("File sent successfully")
