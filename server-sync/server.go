@@ -8,20 +8,8 @@ func handleConnection(conn net.Conn) {
 	defer conn.Close()
 	// Read the header from the connection
 	headerMap := readHeader(conn)
-	// TODO: Get the file path from the header
-	filePath := headerMap["FilePath"]
-	switch headerMap["RequestType"] {
-	case "GET":
-		err := sendFile(conn, filePath, headerMap)
-		if err != nil {
-			panic(err)
-		}
-	case "POST":
-		err := receiveFile(conn, filePath, headerMap)
-		if err != nil {
-			panic(err)
-		}
-	}
+	// Handle the request
+	handleRequest(headerMap, conn)
 }
 
 func main() {

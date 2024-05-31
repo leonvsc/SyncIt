@@ -16,7 +16,6 @@ func receiveFile(conn net.Conn, filePath string, headerMap map[string]string) er
 	length := int64(totalLength(headerMap))
 	bytesSent := int64(0)
 	buffer := make([]byte, 1024*1024) // 1 MB buffer size
-	//buffer := make([]byte, 1) // 1 MB buffer size
 	for bytesSent < length {
 		bytesRead, err := conn.Read(buffer)
 		println("bytesRead: ", bytesRead)
@@ -33,6 +32,11 @@ func receiveFile(conn net.Conn, filePath string, headerMap map[string]string) er
 		}
 		bytesSent += int64(bytesRead)
 	}
+
+	return nil
+}
+
+func processAuthRequest(auth string) error {
 
 	return nil
 }

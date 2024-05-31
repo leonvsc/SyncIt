@@ -15,8 +15,8 @@ func sendFile(conn net.Conn, filePath string, headerMap map[string]string) error
 	defer file.Close()
 	length := int64(totalLength(headerMap))
 	bytesSent := int64(0)
-	//buffer := make([]byte, 1024*1024) // 1 MB buffer size
-	buffer := make([]byte, 1)
+	buffer := make([]byte, 1024*1024) // 1 MB buffer size
+	//buffer := make([]byte, 1)
 	for bytesSent < length {
 		bytesRead, err := file.Read(buffer)
 		if err != nil {
