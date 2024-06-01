@@ -10,14 +10,14 @@ import (
 
 func pullFromServer(conn net.Conn) {
 	requestString := fmt.Sprintf(`RequestType: GET
-ContentType: text/plain
-ContentLength: 21
-Path: files/test2.txt
-GUID: 0dada1dc-cb0a-463a-b028-7d04a8a5d3e4
-FileName: test2.txt
-FileSystem: Unix
-FileExtension: .txt
-Authorization: null`)
+	ContentType: text/plain
+	ContentLength: 21
+	Path: files/test2.txt
+	GUID: 0dada1dc-cb0a-463a-b028-7d04a8a5d3e4
+	FileName: test2.txt
+	FileSystem: Unix
+	FileExtension: .txt
+	Authorization: null`)
 
 	request := createHeaders(requestString)
 	if _, err := conn.Write([]byte(request)); err != nil {

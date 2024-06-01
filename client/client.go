@@ -25,7 +25,10 @@ func makeConnection() {
 	}
 	defer conn.Close()
 	//authorization()
-	runSyncMenu()
+	//runSyncMenu()
+	headerMap := readHeader(conn)
+	handleRequest(headerMap, conn)
+
 }
 
 func establishConnection() error {

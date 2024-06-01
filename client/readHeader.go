@@ -15,8 +15,14 @@ func readHeader(conn net.Conn) map[string]string {
 
 	getHeaderLength(text, headerMap)
 	parseRequestType(text, headerMap)
+	headerLength, _ := strconv.Atoi(headerMap["HeaderLength"])
+	totalContent := 0
 	for _, line := range strings.Split(text, "\n") {
 		parseHeader(line, headerMap)
+		if totalContent >= headerLength {
+			break
+		}
+		totalContent = totalContent + len(line)
 	}
 	if err != nil {
 		fmt.Println(err)
