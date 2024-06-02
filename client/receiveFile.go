@@ -4,6 +4,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"strconv"
 )
 
 func receiveFile(conn net.Conn, filePath string, headerMap map[string]string) error {
@@ -13,7 +14,7 @@ func receiveFile(conn net.Conn, filePath string, headerMap map[string]string) er
 	}
 	defer file.Close()
 
-	length := int64(100)
+	length := int64(totalLength(headerMap))
 	bytesSent := int64(0)
 	buffer := make([]byte, 1024*1024) // 1 MB buffer size
 	for bytesSent < length {
@@ -34,4 +35,10 @@ func receiveFile(conn net.Conn, filePath string, headerMap map[string]string) er
 	}
 
 	return nil
+}
+
+func totalLength(headerMap map[string]string) int {
+	headerLength, _ := strconv.Atoi(headerMap["HeaderLength"])
+	contentLength, _ := strconv.Atoi(headerMap["ContentLength"])
+	return headerLength + contentLength
 }
