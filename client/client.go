@@ -10,7 +10,7 @@ var (
 	serverAddr string
 	conn       net.Conn
 	folderPath = "../local"
-	filePath   = "../local/input3.txt"
+	filePath   = "../local/input.txt"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func makeConnection() {
 		return
 	}
 	defer conn.Close()
-	//authorization()
+	authorization()
 	//runSyncMenu()
 	headerMap := readHeader(conn)
 	handleRequest(headerMap, conn)

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/base64"
+	"encoding/binary"
 	"fmt"
 	"io"
 	"log"
@@ -8,6 +10,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 func sendFile(localFilePath string, conn net.Conn) error {
@@ -20,6 +23,7 @@ func generateHeaders(localFilePath string) []byte {
 	fileName := getFileName(localFilePath)
 	fileExtension := getFileExtension(localFilePath)
 	contentType := getContentType(localFilePath)
+	base64Username := base64.StdEncoding.EncodeToString([]byte(username))
 
 	requestString := fmt.Sprintf(`POST SFTP 1.0
 	ContentType: %s
@@ -29,9 +33,11 @@ func generateHeaders(localFilePath string) []byte {
 	FileName: %s
 	FileSystem: Unix
 	FileExtension: %s
-	Authorization: null`, contentType, contentLength, localFilePath, fileName, fileExtension)
+	Authorization: %s`, contentType, contentLength, localFilePath, fileName, fileExtension, base64Username)
 
-	return []byte(requestString)
+	request := createHeaderLength(requestString)
+
+	return []byte(request)
 
 }
 
@@ -113,4 +119,28 @@ func getContentType(filePath string) string {
 	}
 
 	return contentType
+}
+
+func createHeaderLength(requestString string) string {
+	byteArray := []byte(requestString)
+
+	// Calculate the length of the byte array
+	length := len(byteArray)
+
+	// Convert the length integer to a byte array of 4 bytes
+	lengthBytes := make([]byte, 4)
+	binary.BigEndian.PutUint32(lengthBytes, uint32(length))
+
+	// Get the last value of lengthBytes
+	lastByte := lengthBytes[3] // 3 is the index from the last element in the slice
+
+	// Convert the last byte to a string
+	lastValue := strconv.Itoa(int(lastByte))
+
+	// Add zero's to the left to create a digit with 4 digits
+	paddedLastValue := fmt.Sprintf("%04s", lastValue)
+
+	// Print the result
+	request := paddedLastValue + "\n" + requestString
+	return request
 }
