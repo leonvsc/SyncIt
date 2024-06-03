@@ -13,16 +13,16 @@ import (
 	"strconv"
 )
 
-func sendFile(localFilePath string, conn net.Conn) error {
-	headers := generateHeaders(localFilePath)
-	return generateBody(localFilePath, headers, conn)
+func sendFile(fileToSync string, conn net.Conn) error {
+	headers := generateHeaders(fileToSync)
+	return generateBody(fileToSync, headers, conn)
 }
 
-func generateHeaders(localFilePath string) []byte {
-	contentLength := getContentLength(localFilePath)
-	fileName := getFileName(localFilePath)
-	fileExtension := getFileExtension(localFilePath)
-	contentType := getContentType(localFilePath)
+func generateHeaders(fileToSync string) []byte {
+	contentLength := getContentLength(fileToSync)
+	fileName := getFileName(fileToSync)
+	fileExtension := getFileExtension(fileToSync)
+	contentType := getContentType(fileToSync)
 	base64Username := base64.StdEncoding.EncodeToString([]byte(username))
 
 	requestString := fmt.Sprintf(`POST SFTP 1.0
@@ -33,7 +33,7 @@ func generateHeaders(localFilePath string) []byte {
 	FileName: %s
 	FileSystem: Unix
 	FileExtension: %s
-	Authorization: %s`, contentType, contentLength, localFilePath, fileName, fileExtension, base64Username)
+	Authorization: %s`, contentType, contentLength, fileToSync, fileName, fileExtension, base64Username)
 
 	request := createHeaderLength(requestString)
 

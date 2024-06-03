@@ -21,10 +21,10 @@ func pushFolderToServer(conn net.Conn, folderPath string) {
 
 		if entry.IsDir() {
 			// If the entry is a directory, recursively call pushFolderToServer
-			pushFolderToServer(conn, entryPath)
+			sendFile(entryPath, conn)
 		} else {
 			// If the entry is a file, push it to the server
-			pushFileToServer(conn, entryPath)
+			sendFile(entryPath, conn)
 
 			// Add a delimiter between files (except for the last file)
 			if i < len(entries)-1 {

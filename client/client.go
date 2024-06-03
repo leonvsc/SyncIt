@@ -24,10 +24,10 @@ func makeConnection() {
 		return
 	}
 	defer conn.Close()
-	authorization()
-	//runSyncMenu()
-	headerMap := readHeader(conn)
-	handleRequest(headerMap, conn)
+	//authorization()
+	runSyncMenu()
+	//headerMap := readHeader(conn)
+	//handleRequest(headerMap, conn)
 
 }
 
@@ -83,12 +83,14 @@ func runSyncMenu() {
 	case 1:
 		pushFolderToServer(conn, folderPath)
 	case 2:
-		err := sendFile(filePath, conn)
+		fileToSync := getFileList()
+		err := sendFile(fileToSync, conn)
 		if err != nil {
 			return
 		}
 	case 3:
-		pullFromServer(conn)
+		headerMap := readHeader(conn)
+		handleRequest(headerMap, conn)
 	case 4:
 		runMainMenu()
 	}
