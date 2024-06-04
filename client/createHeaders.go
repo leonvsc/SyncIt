@@ -18,7 +18,7 @@ func createHeaders(requestString string) string {
 	binary.BigEndian.PutUint32(lengthBytes, uint32(length))
 
 	// Get the last value of lengthBytes
-	lastByte := lengthBytes[3] // 3 is the index from the last element in the slice
+	lastByte := lengthBytes[3]
 
 	// Convert the last byte to a string
 	lastValue := strconv.Itoa(int(lastByte))

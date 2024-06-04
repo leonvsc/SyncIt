@@ -10,7 +10,6 @@ var (
 	serverAddr string
 	conn       net.Conn
 	folderPath = "../local"
-	filePath   = "../local/input.txt"
 )
 
 func main() {
@@ -24,11 +23,8 @@ func makeConnection() {
 		return
 	}
 	defer conn.Close()
-	//authorization()
+	authorization()
 	runSyncMenu()
-	//headerMap := readHeader(conn)
-	//handleRequest(headerMap, conn)
-
 }
 
 func establishConnection() error {
@@ -69,7 +65,7 @@ func runMainMenu() {
 }
 
 func runSyncMenu() {
-	options := []string{"Push Folder", "Push File", "Pull from server", "Back"}
+	options := []string{"Push Folder", "Push File", "Listen to server", "Back"}
 	displayMenu(options)
 
 	var choice int
