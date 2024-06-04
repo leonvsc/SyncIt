@@ -30,6 +30,9 @@ func findPort(t *testing.T) int {
 		t.Fatal(err)
 	}
 	port := addr.Addr().(*net.TCPAddr).Port
-	addr.Close()
+	err = addr.Close()
+	if err != nil {
+		return 0
+	}
 	return port
 }

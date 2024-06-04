@@ -22,7 +22,12 @@ func makeConnection() {
 		fmt.Println("Failed to connect to server:", err)
 		return
 	}
-	defer conn.Close()
+	defer func(conn net.Conn) {
+		err := conn.Close()
+		if err != nil {
+			fmt.Println("Failed to close connection:", err)
+		}
+	}(conn)
 	authorization()
 	runSyncMenu()
 }
@@ -35,7 +40,10 @@ func establishConnection() error {
 
 func closeConnection() {
 	if conn != nil {
-		conn.Close()
+		err := conn.Close()
+		if err != nil {
+			return
+		}
 	}
 }
 

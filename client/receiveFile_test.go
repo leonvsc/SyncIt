@@ -20,7 +20,10 @@ func TestReceiveFile(t *testing.T) {
 	client := mockStartClient(t, port)
 
 	// When
-	client.Write(testFileContent)
+	_, err := client.Write(testFileContent)
+	if err != nil {
+		return
+	}
 	conn, err := listener.Accept()
 	if err != nil {
 		t.Error(err)
@@ -37,6 +40,9 @@ func TestReceiveFile(t *testing.T) {
 	}
 
 	// Clean up
-	conn.Close()
+	err = conn.Close()
+	if err != nil {
+		return
+	}
 	err = os.Remove(testFilePath)
 }

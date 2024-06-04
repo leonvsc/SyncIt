@@ -13,7 +13,12 @@ func getFileList() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(file)
 
 	// Read the directory contents
 	files, err := os.ReadDir(folderPath)

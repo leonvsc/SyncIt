@@ -18,13 +18,23 @@ func TestSendFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.Remove(testFilePath)
+	defer func(name string) {
+		err := os.Remove(name)
+		if err != nil {
+			t.Error(err)
+		}
+	}(testFilePath)
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer listener.Close()
+	defer func(listener net.Listener) {
+		err := listener.Close()
+		if err != nil {
+			t.Error(err)
+		}
+	}(listener)
 
 	go func() {
 		conn, err := listener.Accept()
@@ -32,7 +42,12 @@ func TestSendFile(t *testing.T) {
 			t.Error(err)
 			return
 		}
-		defer conn.Close()
+		defer func(conn net.Conn) {
+			err := conn.Close()
+			if err != nil {
+				t.Error(err)
+			}
+		}(conn)
 
 		// Read headers
 		buf := make([]byte, 1024)
@@ -62,7 +77,12 @@ func TestSendFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer client.Close()
+	defer func(client net.Conn) {
+		err := client.Close()
+		if err != nil {
+			t.Error(err)
+		}
+	}(client)
 
 	// When
 	err = sendFile(testFilePath, client)

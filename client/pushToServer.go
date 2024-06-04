@@ -21,19 +21,31 @@ func pushFolderToServer(conn net.Conn, folderPath string) {
 
 		if entry.IsDir() {
 			// If the entry is a directory, recursively call pushFolderToServer
-			sendFile(entryPath, conn)
+			err := sendFile(entryPath, conn)
+			if err != nil {
+				return
+			}
 		} else {
 			// If the entry is a file, push it to the server
-			sendFile(entryPath, conn)
+			err := sendFile(entryPath, conn)
+			if err != nil {
+				return
+			}
 
 			// Add a delimiter between files (except for the last file)
 			if i < len(entries)-1 {
-				conn.Write([]byte("\n\n"))
+				_, err := conn.Write([]byte("\n\n"))
+				if err != nil {
+					return
+				}
 			}
 		}
 	}
 
 	// Add a delimiter after syncing the folder
-	conn.Write([]byte("\n\n"))
+	_, err = conn.Write([]byte("\n\n"))
+	if err != nil {
+		return
+	}
 	fmt.Println("Folder synced successfully.")
 }

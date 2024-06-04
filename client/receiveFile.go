@@ -12,7 +12,12 @@ func receiveFile(conn net.Conn, filePath string, headerMap map[string]string) er
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			return
+		}
+	}(file)
 
 	length := int64(totalLength(headerMap))
 	bytesSent := int64(0)

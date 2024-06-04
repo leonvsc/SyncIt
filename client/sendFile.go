@@ -58,7 +58,12 @@ func generateBody(localFilePath string, headers []byte, conn net.Conn) error {
 	if err != nil {
 		return fmt.Errorf("error opening file: %w", err)
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			return
+		}
+	}(file)
 
 	chunkSize := 1024 * 1024 * 100
 

@@ -18,7 +18,10 @@ func authorization() {
 
 func askUsername() {
 	fmt.Println("Enter username:")
-	fmt.Scanln(&username)
+	_, err := fmt.Scanln(&username)
+	if err != nil {
+		return
+	}
 	fmt.Println("Username set to:", username)
 }
 
