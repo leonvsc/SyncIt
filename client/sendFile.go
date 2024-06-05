@@ -26,6 +26,7 @@ func generateHeaders(fileToSync string) []byte {
 	base64Username := base64.StdEncoding.EncodeToString([]byte(username))
 
 	requestString := fmt.Sprintf(`POST SFTP 1.0
+	RequestType: POST
 	ContentType: %s
 	ContentLength: %d
 	Path: %s
