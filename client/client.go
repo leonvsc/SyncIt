@@ -10,7 +10,6 @@ var (
 	serverAddr string
 	conn       net.Conn
 	folderPath = "../local"
-	filePath   = "../local/input.txt"
 )
 
 func main() {
@@ -23,7 +22,13 @@ func makeConnection() {
 		fmt.Println("Failed to connect to server:", err)
 		return
 	}
-	defer conn.Close()
+	defer func(conn net.Conn) {
+		err := conn.Close()
+		if err != nil {
+			fmt.Println("Failed to close connection:", err)
+		}
+	}(conn)
+	authorization()
 	runSyncMenu()
 }
 
@@ -35,7 +40,10 @@ func establishConnection() error {
 
 func closeConnection() {
 	if conn != nil {
-		conn.Close()
+		err := conn.Close()
+		if err != nil {
+			return
+		}
 	}
 }
 
@@ -61,11 +69,13 @@ func runMainMenu() {
 		fmt.Println("Exiting program...")
 		closeConnection() // Close connection before exiting
 		os.Exit(0)
+	default:
+		fmt.Println("Invalid choice. Please enter a valid option number.")
 	}
 }
 
 func runSyncMenu() {
-	options := []string{"Push Folder", "Push File", "Pull from server", "Back"}
+	options := []string{"Push Folder", "Push File", "Listen to server", "Back"}
 	displayMenu(options)
 
 	var choice int
@@ -79,11 +89,18 @@ func runSyncMenu() {
 	case 1:
 		pushFolderToServer(conn, folderPath)
 	case 2:
-		pushFileToServer(conn, filePath)
+		fileToSync := getFileList()
+		err := sendFile(fileToSync, conn)
+		if err != nil {
+			return
+		}
 	case 3:
-		pullFromServer(conn)
+		headerMap := readHeader(conn)
+		handleRequest(headerMap, conn)
 	case 4:
 		runMainMenu()
+	default:
+		fmt.Println("Invalid choice. Please enter a valid option number.")
 	}
 }
 
@@ -105,6 +122,8 @@ func runOptiesMenu() {
 		showCurrentServer()
 	case 3:
 		runMainMenu()
+	default:
+		fmt.Println("Invalid choice. Please enter a valid option number.")
 	}
 }
 

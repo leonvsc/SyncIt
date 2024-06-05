@@ -4,7 +4,10 @@ import "fmt"
 
 func syncServer() {
 	fmt.Println("Enter server address:")
-	fmt.Scanln(&serverAddr)
+	_, err := fmt.Scanln(&serverAddr)
+	if err != nil {
+		return
+	}
 	fmt.Println("Server address set to:", serverAddr)
 	runOptiesMenu()
 }
