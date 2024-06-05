@@ -69,6 +69,8 @@ func runMainMenu() {
 		fmt.Println("Exiting program...")
 		closeConnection() // Close connection before exiting
 		os.Exit(0)
+	default:
+		fmt.Println("Invalid choice. Please enter a valid option number.")
 	}
 }
 
@@ -97,6 +99,8 @@ func runSyncMenu() {
 		handleRequest(headerMap, conn)
 	case 4:
 		runMainMenu()
+	default:
+		fmt.Println("Invalid choice. Please enter a valid option number.")
 	}
 }
 
@@ -118,6 +122,8 @@ func runOptiesMenu() {
 		showCurrentServer()
 	case 3:
 		runMainMenu()
+	default:
+		fmt.Println("Invalid choice. Please enter a valid option number.")
 	}
 }
 

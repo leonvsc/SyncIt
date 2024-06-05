@@ -42,7 +42,7 @@ Authorization: %s`, base64Username)
 	}
 
 	// Read response from the server
-	response := make([]byte, 1024) // Adjust the buffer size as per your requirement
+	response := make([]byte, 1024)
 	_, err = conn.Read(response)
 	if err != nil {
 		fmt.Println("Error reading response:", err)
@@ -75,6 +75,4 @@ func extractStatusCode(response []byte) string {
 		}
 	}
 	return "" // Status code not founding
-
-	// TODO: give a real error and make it more user friendly with clearing the screen or something after each print.
 }
