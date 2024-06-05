@@ -43,11 +43,12 @@ Authorization: %s`, base64Username)
 
 	// Read response from the server
 	response := make([]byte, 1024)
-	_, err = conn.Read(response)
+	n, err := conn.Read(response)
 	if err != nil {
 		fmt.Println("Error reading response:", err)
 		return
 	}
+	response = response[:n]
 
 	// Extract status code from the response
 	statusCode := extractStatusCode(response)
