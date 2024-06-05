@@ -4,29 +4,18 @@ import (
 	"net"
 )
 
-//type ClientRequest struct {
-//	Username string
-//	Response chan *Client
-//}
-//
-//type Client struct {
-//	Username      string
-//	ClientAddress string
-//}
-
 var (
 	clientUserName string
-	//clientChannel  = make(chan ClientRequest)
-	//clients        = make(map[string]*Client)
-	//mu             sync.Mutex
 )
 
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
 	// Read the header from the connection
-	headerMap := readHeader(conn)
-	// Handle the request
-	handleRequest(headerMap, conn)
+	for {
+		headerMap := readHeader(conn)
+		// Handle the request
+		handleRequest(headerMap, conn)
+	}
 }
 
 func main() {

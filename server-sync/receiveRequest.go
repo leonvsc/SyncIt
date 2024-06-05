@@ -41,20 +41,5 @@ func processAuthRequest(auth string, conn net.Conn) string {
 	userName, _ := base64.StdEncoding.DecodeString(auth)
 	clientUserName = string(userName)
 	conn.Write([]byte("0029\nAUTH SFTP 1.0\nStatuscode: 200"))
-	//remoteAddr := conn.RemoteAddr().String()
-	//responseChan := make(chan *Client)
-	//clientChannel <- ClientRequest{Username: auth, Response: responseChan}
-	//go func() {
-	//	for req := range clientChannel {
-	//		mu.Lock()
-	//		client, exists := clients[req.Username]
-	//		if !exists {
-	//			client = &Client{Username: req.Username, ClientAddress: remoteAddr}
-	//			clients[req.Username] = client
-	//		}
-	//		mu.Unlock()
-	//		req.Response <- client
-	//	}
-	//}()
 	return clientUserName
 }
