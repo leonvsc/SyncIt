@@ -71,8 +71,8 @@ func parseHeader(line string, headerMap map[string]string) {
 		headerMap["FileName"] = strings.Split(line, ": ")[1]
 	case strings.Contains(line, "FileExtension"):
 		headerMap["FileExtension"] = strings.Split(line, ": ")[1]
-	case strings.Contains(line, "Authorisation"):
-		headerMap["Authorisation"] = strings.Split(line, ": ")[1]
+	case strings.Contains(line, "Authorization"):
+		headerMap["Authorization"] = strings.Split(line, ": ")[1]
 	case strings.Contains(line, "MimeType"):
 		headerMap["MimeType"] = strings.Split(line, ": ")[1]
 	default:

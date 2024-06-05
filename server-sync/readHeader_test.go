@@ -75,7 +75,7 @@ func TestReadHeaderLines(t *testing.T) {
 		"FileSystem: /tmp\n" +
 		"FileName: test.txt\n" +
 		"FileExtension: txt\n" +
-		"Authorisation: Basic\n" +
+		"Authorization: Basic\n" +
 		"MimeType: text/plain\n"
 
 	content := make(map[string]string)
@@ -86,7 +86,7 @@ func TestReadHeaderLines(t *testing.T) {
 	content["FileSystem"] = "/tmp"
 	content["FileName"] = "test.txt"
 	content["FileExtension"] = "txt"
-	content["Authorisation"] = "Basic"
+	content["Authorization"] = "Basic"
 	content["MimeType"] = "text/plain"
 	listener := mockStartServer(t, port)
 	client := mockStartClient(t, port)

@@ -14,10 +14,10 @@ func TestSendFile(t *testing.T) {
 	// Given
 	port := findPort(t)
 	testFileContent := []byte("This is a test file.")
+	response := "0018ContentLength: 20\nThis is a test file."
 	contentLength := len(testFileContent)
-	fmt.Println("Content Length: ", contentLength)
 	testFilePath := "testFile.txt"
-	headerMap := map[string]string{"HeaderLength": "0", "ContentLength": strconv.Itoa(contentLength)}
+	headerMap := map[string]string{"ContentLength": strconv.Itoa(contentLength)}
 	file, err := os.Create(testFilePath)
 	_, err = file.Write(testFileContent)
 	file.Close()
@@ -37,7 +37,7 @@ func TestSendFile(t *testing.T) {
 
 	// Then
 	fmt.Println("FileContent: ", string(fileContent))
-	if !bytes.Equal(testFileContent, fileContent) {
+	if !bytes.Equal([]byte(response), fileContent) {
 		t.Error("The file sent and the file received are not equal.")
 	}
 	err = os.Remove(testFilePath)
@@ -77,5 +77,6 @@ func mockClientRead(conn net.Conn, length int64) ([]byte, error) {
 		bytesSent += int64(bytesRead)
 	}
 	conn.Close()
+	fmt.Println("Message: ", string(message))
 	return message, nil
 }
