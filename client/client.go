@@ -75,7 +75,7 @@ func runMainMenu() {
 }
 
 func runSyncMenu() {
-	options := []string{"Push Folder", "Push File", "Listen to server", "Back"}
+	options := []string{"Push Folder", "Push File", "Listen to server", "Get from server", "Back"}
 	displayMenu(options)
 
 	var choice int
@@ -98,6 +98,8 @@ func runSyncMenu() {
 		headerMap := readHeader(conn)
 		handleRequest(headerMap, conn)
 	case 4:
+		//getFromServer(conn)
+	case 5:
 		runMainMenu()
 	default:
 		fmt.Println("Invalid choice. Please enter a valid option number.")
