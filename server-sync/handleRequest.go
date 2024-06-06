@@ -10,6 +10,16 @@ import (
 
 func handleRequest(headerMap map[string]string, conn net.Conn) {
 	filePath := clientUserName + "/" + headerMap["FileName"]
+	folderExists, err := exists(clientUserName + "/")
+	if err != nil {
+		return
+	}
+	if !folderExists {
+		err := os.Mkdir(clientUserName, 0755)
+		if err != nil {
+			panic(err)
+		}
+	}
 	switch headerMap["RequestType"] {
 	case "GET":
 		header := createHeaderMap(headerMap, filePath)
@@ -26,6 +36,18 @@ func handleRequest(headerMap map[string]string, conn net.Conn) {
 		clientUserName = processAuthRequest(headerMap["Authorization"], conn)
 	default:
 	}
+}
+
+// exists returns whether the given file or directory exists
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }
 
 func createHeaderMap(header map[string]string, path string) map[string]string {
