@@ -33,9 +33,19 @@ func readHeader(conn net.Conn) map[string]string {
 
 func getHeaderLength(header string, headerMap map[string]string) {
 	headerLength := make([]byte, 4)
+	if len(header) < 4 {
+		fmt.Println("Header length is less than 4 bytes")
+		fmt.Println("Header: " + header)
+		fmt.Println("HeaderMap: " + fmt.Sprint(headerMap))
+		return
+	}
 	copy(headerLength, header[:4])
 	// Convert the header length to an integer to remove leading zeros
-	length, _ := strconv.Atoi(string(headerLength))
+	length, err := strconv.Atoi(string(headerLength))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	headerMap["HeaderLength"] = strconv.Itoa(length)
 }
 

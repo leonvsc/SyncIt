@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strings"
 )
 
 var (
@@ -34,6 +35,9 @@ func makeConnection() {
 
 func establishConnection() error {
 	var err error
+	if serverAddr == "" {
+		serverAddr = ":50000"
+	}
 	conn, err = net.Dial("tcp", serverAddr)
 	return err
 }
@@ -64,7 +68,7 @@ func runMainMenu() {
 	case 2:
 		runSyncMenu()
 	case 3:
-		runOptiesMenu()
+		runOptionsMenu()
 	case 4:
 		fmt.Println("Exiting program...")
 		closeConnection() // Close connection before exiting
@@ -75,7 +79,7 @@ func runMainMenu() {
 }
 
 func runSyncMenu() {
-	options := []string{"Push Folder", "Push File", "Listen to server", "Back"}
+	options := []string{"Push Folder", "Push File", "Get File", "Listen to server", "Back"}
 	displayMenu(options)
 
 	var choice int
@@ -88,23 +92,50 @@ func runSyncMenu() {
 	switch choice {
 	case 1:
 		pushFolderToServer(conn, folderPath)
+		break
 	case 2:
 		fileToSync := getFileList()
 		err := sendFile(fileToSync, conn)
 		if err != nil {
 			return
 		}
+		break
 	case 3:
+		var fileName string
+		fmt.Println("Enter filename:")
+		_, err := fmt.Scanln(&fileName)
+		if err != nil {
+			fmt.Println("Error reading filename:", err)
+			return
+		}
+		message := requestFile(fileName)
+		conn.Write([]byte(message))
+
+		buffer := make([]byte, 1024*1024) // 1 MB buffer size
+		bytesRead, err := conn.Read(buffer)
+		text := string(buffer[:bytesRead])
+		if strings.Contains(text, "Statuscode: 404") {
+			fmt.Println("File not found on server")
+			return
+		}
+
 		headerMap := readHeader(conn)
 		handleRequest(headerMap, conn)
+		break
 	case 4:
+		headerMap := readHeader(conn)
+		handleRequest(headerMap, conn)
+		break
+	case 5:
 		runMainMenu()
+		break
 	default:
 		fmt.Println("Invalid choice. Please enter a valid option number.")
+		break
 	}
 }
 
-func runOptiesMenu() {
+func runOptionsMenu() {
 	options := []string{"Set sync server", "Show current sync server", "Back"}
 	displayMenu(options)
 

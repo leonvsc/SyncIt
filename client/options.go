@@ -9,10 +9,10 @@ func syncServer() {
 		return
 	}
 	fmt.Println("Server address set to:", serverAddr)
-	runOptiesMenu()
+	runOptionsMenu()
 }
 
 func showCurrentServer() {
 	fmt.Println("Server address set to:", serverAddr)
-	runOptiesMenu()
+	runOptionsMenu()
 }

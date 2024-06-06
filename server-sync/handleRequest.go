@@ -18,16 +18,20 @@ func handleRequest(headerMap map[string]string, conn net.Conn) {
 	if !folderExists {
 		err := os.Mkdir(clientUserName, 0755)
 		if err != nil {
+			fmt.Println("Failed to create directory:", err)
 			panic(err)
 		}
 	}
 	switch headerMap["RequestType"] {
 	case "GET":
 		fileExists, err := exists(filePath)
+		fmt.Println("GET request received")
 		if err != nil {
+			fmt.Println("Failed to check if file exists:", err)
 			return
 		}
 		if !fileExists {
+			fmt.Println("File does not exist")
 			conn.Write([]byte("0021 POST Statuscode: 404"))
 			return
 		}
@@ -46,6 +50,7 @@ func handleRequest(headerMap map[string]string, conn net.Conn) {
 	case "AUTH":
 		clientUserName = processAuthRequest(headerMap["Authorization"], conn)
 	default:
+		return
 	}
 }
 

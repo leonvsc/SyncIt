@@ -36,7 +36,7 @@ func generateHeaders(fileToSync string) []byte {
 	FileExtension: %s
 	Authorization: %s`, contentType, contentLength, fileToSync, fileName, fileExtension, base64Username)
 
-	request := createHeaderLength(requestString)
+	request := createHeaders(requestString)
 
 	return []byte(request)
 
@@ -84,7 +84,7 @@ func generateBody(localFilePath string, headers []byte, conn net.Conn) error {
 		if err != nil {
 			return fmt.Errorf("error sending file chunk: %w", err)
 		}
-		bytesSent += int64(bytesRead)
+		bytesSent += bytesRead
 	}
 
 	fmt.Println("File sent successfully")

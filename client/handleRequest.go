@@ -1,19 +1,24 @@
 package main
 
-import "net"
+import (
+	"fmt"
+	"net"
+)
 
 func handleRequest(headerMap map[string]string, conn net.Conn) {
-	filePath := headerMap["FilePath"]
+	filePath := "../local" + "/" + headerMap["FileName"]
 	switch headerMap["RequestType"] {
 	case "GET":
 		err := sendFile(filePath, conn)
 		if err != nil {
-			panic(err)
+			fmt.Println("Failed to send file:", err)
+			return
 		}
 	case "POST":
 		err := receiveFile(conn, filePath, headerMap)
 		if err != nil {
-			panic(err)
+			fmt.Println("Failed to receive file:", err)
+			return
 		}
 	default:
 	}
