@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"mime"
 	"net"
 	"os"
@@ -22,15 +23,25 @@ func handleRequest(headerMap map[string]string, conn net.Conn) {
 	}
 	switch headerMap["RequestType"] {
 	case "GET":
-		header := createHeaderMap(headerMap, filePath)
-		err := sendFile(conn, filePath, header)
+		fileExists, err := exists(filePath)
 		if err != nil {
-			panic(err)
+			return
+		}
+		if !fileExists {
+			conn.Write([]byte("0021 POST Statuscode: 404"))
+			return
+		}
+		header := createHeaderMap(headerMap, filePath)
+		err = sendFile(conn, filePath, header)
+		if err != nil {
+			fmt.Println("Failed to send file:", err)
+			return
 		}
 	case "POST":
 		err := receiveFile(conn, filePath, headerMap)
 		if err != nil {
-			panic(err)
+			fmt.Println("Failed to receive file:", err)
+			return
 		}
 	case "AUTH":
 		clientUserName = processAuthRequest(headerMap["Authorization"], conn)
